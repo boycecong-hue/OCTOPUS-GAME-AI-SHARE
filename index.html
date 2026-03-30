@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Coding 技术分享会 (MD 驱动版)</title>
+    <!-- 引入资源 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #e0f2fe;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+            --sidebar-width: 300px;
+            --cover-bg-start: #fffdfd;
+            --cover-bg-end: #f8fbff;
+            --cover-grid: rgba(167, 139, 250, 0.05);
+            --cover-glow-primary: rgba(244, 184, 255, 0.28);
+            --cover-glow-secondary: rgba(165, 243, 252, 0.28);
+            --cover-glow-tertiary: rgba(253, 224, 71, 0.22);
+            --cover-text: #334155;
+            --cover-muted: #64748b;
+            --cover-panel: rgba(255, 255, 255, 0.35);
+            --cover-border: rgba(255, 255, 255, 0.12);
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background: var(--light);
+            color: #1e293b;
+            overflow: hidden;
+        }
+
+        /* 侧边导航重构 - 现代优雅风格 */
+        nav {
+            width: var(--sidebar-width);
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            flex-shrink: 0;
+            border-right: 1px solid var(--border);
+            z-index: 100;
+        }
+        
+        .nav-header {
+            padding: 0 10px 30px 10px;
+            margin-bottom: 10px;
+        }
+        .nav-header h2 { 
+            margin: 0; 
+            font-size: 1.5rem; 
+            font-weight: 800; 
+            background: linear-gradient(135deg, var(--primary), #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .nav-header p {
+            margin: 5px 0 0 0;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        nav a {
+            padding: 14px 18px;
+            color: #64748b;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+        
+        nav a:hover {
+            background: #f1f5f9;
+            color: var(--dark);
+            transform: translateX(4px);
+        }
+        
+        nav a.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+            border-color: #bae6fd;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        
+        nav a::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+            margin-right: 15px;
+            opacity: 0.4;
+        }
+        
+        nav a.active::before {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        /* 主内容区 */
+        main {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 60px 80px;
+            background: #fcfcfc;
+            scroll-behavior: smooth;
+        }
+        
+        #content { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            line-height: 1.8;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Markdown 样式覆盖 */
+        #content h1 { border-bottom: none; margin-bottom: 40px; font-size: 3rem; font-weight: 800; letter-spacing: -1px; }
+        #content h2 { margin-top: 50px; color: var(--dark); font-weight: 700; position: relative; }
+        #content h2::after {
+            content: "";
+            position: absolute;
+            bottom: -10px; left: 0;
+            width: 40px; height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        #content blockquote { 
+            border-left: none; 
+            padding: 25px 30px; 
+            background: #f1f5f9; 
+            color: #475569; 
+            margin: 30px 0; 
+            border-radius: 16px;
+            font-style: italic;
+            position: relative;
+        }
+        #content blockquote::before {
+            content: '"';
+            position: absolute;
+            top: 10px; left: 10px;
+            font-size: 4rem;
+            color: #cbd5e1;
+            font-family: serif;
+            line-height: 1;
+        }
+        
+        #content table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 30px 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+        #content th, #content td { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+        #content th { background: #f8fafc; font-weight: 700; color: var(--dark); border-bottom: 2px solid var(--border); }
+        #content tr:last-child td { border-bottom: none; }
+        
+        #content pre { border-radius: 16px; padding: 25px !important; margin: 30px 0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        #content img { max-width: 100%; border-radius: 20px; margin: 30px 0; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        #content code { background: #f1f5f9; padding: 3px 6px; border-radius: 6px; font-family: 'Fira Code', monospace; color: #ef4444; font-size: 0.9em; }
+
+        /* Mermaid 样式美化 */
+        .mermaid-container {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            display: block;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+        .mermaid { display: flex; justify-content: center; min-width: 800px; }
+
+        .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; color: #94a3b8; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .cover-hero {
+            position: relative;
+            isolation: isolate;
+            overflow: visible;
+            display: flex;
+            flex-direction: column;
+            gap: 44px;
+            padding: 36px 8px 12px;
+            color: var(--cover-text);
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        .cover-hero::before {
+            content: "";
+            position: absolute;
+            inset: -8% -6%;
+            background:
+                radial-gradient(circle at 14% 22%, var(--cover-glow-primary), transparent 24%),
+                radial-gradient(circle at 82% 18%, var(--cover-glow-secondary), transparent 22%),
+                radial-gradient(circle at 62% 72%, var(--cover-glow-tertiary), transparent 18%);
+            opacity: 1;
+            pointer-events: none;
+            z-index: -1;
+            filter: blur(8px);
+        }
+
+        .cover-hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover-main {
+            max-width: 980px;
+        }
+
+        .cover-brand-block {
+            margin-bottom: 40px;
+        }
+
+        .cover-brand-label {
+            margin-bottom: 12px;
+            color: #4f46e5;
+            font-size: 1rem;
+            font-weight: 900;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+        }
+
+        .cover-brand-name {
+            color: #0f172a;
+            font-size: clamp(1.8rem, 2.6vw, 2.6rem);
+            font-weight: 900;
+            letter-spacing: -0.035em;
+            line-height: 1.15;
+        }
+
+        .cover-brand-subtitle {
+            margin-top: 10px;
+            color: #64748b;
+            font-size: 1.02rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+        }
+
+        .cover-kicker {
+            margin: 0 0 28px;
+            color: #6366f1;
+            font-size: 0.88rem;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .cover-title {
+            margin: 0;
+            max-width: 13ch;
+            color: #334155;
+            font-size: clamp(3.1rem, 5.4vw, 4.9rem);
+            line-height: 1.08;
+            letter-spacing: -0.04em;
+            font-weight: 900;
+        }
+
+        .cover-title-accent {
+            display: block;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cover-manifesto {
+            max-width: 780px;
+            margin: 34px 0 0;
+            color: var(--cover-muted);
+            font-size: 1rem;
+            line-height: 1.95;
+        }
+
+        .cover-panel {
+            align-self: center;
+            padding: 8px 0 0;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+            backdrop-filter: none;
+            box-shadow: none;
+        }
+
+        .cover-meta {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            margin: 0;
+        }
+
+        .cover-meta-inline {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            align-items: stretch;
+            margin-top: 8px;
+        }
+
+        .cover-meta > div {
+            padding: 20px 22px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            box-shadow: 0 8px 20px rgba(148, 163, 184, 0.08);
+            backdrop-filter: blur(10px);
+        }
+
+        .cover-meta-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #94a3b8;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .cover-meta-value {
+            display: block;
+            color: #334155;
+            font-size: 1.02rem;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .cover-focus-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .cover-tag {
+            display: inline-flex;
+            align-items: center;
+            min-height: 36px;
+            padding: 0 14px;
+            border: 1px solid rgba(191, 219, 254, 0.5);
+            border-radius: 999px;
+            background: rgba(239, 246, 255, 0.9);
+            color: #475569;
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            box-shadow: none;
+        }
+
+        @media (max-width: 980px) {
+            main {
+                padding: 40px 32px;
+            }
+
+            .cover-hero {
+                gap: 36px;
+                padding: 28px 4px 8px;
+            }
+
+            .cover-title {
+                max-width: none;
+                font-size: clamp(2.7rem, 8.5vw, 4.2rem);
+            }
+
+            .cover-manifesto {
+                max-width: none;
+                font-size: 1rem;
+            }
+
+            .cover-meta-inline {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            main {
+                padding: 28px 18px;
+            }
+
+            .cover-hero {
+                gap: 28px;
+                padding: 16px 0 4px;
+            }
+
+            .cover-brand-block {
+                margin-bottom: 32px;
+            }
+
+            .cover-brand-label {
+                font-size: 0.76rem;
+                letter-spacing: 0.18em;
+            }
+
+            .cover-brand-name {
+                font-size: 1.25rem;
+            }
+
+            .cover-brand-subtitle {
+                font-size: 0.92rem;
+            }
+
+            .cover-kicker {
+                font-size: 0.84rem;
+                letter-spacing: 0.12em;
+            }
+
+            .cover-title {
+                font-size: clamp(2.2rem, 12vw, 3.2rem);
+                line-height: 1.06;
+            }
+
+            .cover-manifesto {
+                margin-top: 24px;
+                font-size: 0.96rem;
+                line-height: 1.9;
+            }
+
+            .cover-meta-inline {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .cover-meta > div {
+                padding: 16px 18px;
+                border-radius: 20px;
+            }
+
+            .cover-focus-list {
+                gap: 8px;
+                margin-top: 0;
+            }
+
+            .cover-tag {
+                min-height: 34px;
+                padding: 0 13px;
+                font-size: 0.84rem;
+            }
+        }
+
+        .error-box { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 40px; border-radius: 20px; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+<nav id="sidebar">
+    <div class="nav-header">
+        <h2>AI Coding 分享会</h2>
+        <p>Galaxy Studio · AI Coding 技术分享</p>
+    </div>
+    <div class="nav-links">
+        <a onclick="loadSection('00-cover', this)" class="active">欢迎与开场</a>
+        <a onclick="loadSection('01-intro', this)">愿景与范式演进</a>
+        <a onclick="loadSection('02-terms', this)">术语深度解析</a>
+        <a onclick="loadSection('03-cli', this)">硬核 CLI 三剑客</a>
+        <a onclick="loadSection('04-sdlc', this)">闭环实战演示</a>
+        <a onclick="loadSection('05-enterprise', this)">企业级落地</a>
+        <a onclick="loadSection('06-future', this)">角色演进</a>
+    </div>
+</nav>
+
+<main>
+    <div id="content">
+        <div class="loading">
+            <div class="spinner"></div>
+            正在准备分享内容...
+        </div>
+    </div>
+</main>
+
+<script>
+    // 配置 Marked 渲染器
+    const renderer = new marked.Renderer();
+    renderer.code = function({text, lang}) {
+        if (lang === 'mermaid') {
+            return `<div class="mermaid-container"><div class="mermaid">${text}</div></div>`;
+        }
+        const langClass = lang ? `language-${lang}` : '';
+        return `<pre class="${langClass}"><code>${text}</code></pre>`;
+    };
+    marked.setOptions({ renderer });
+
+    // 初始化 Mermaid
+    mermaid.initialize({ 
+        startOnLoad: false, 
+        theme: 'default', 
+        themeVariables: {
+            primaryColor: '#e0f2fe',
+            primaryTextColor: '#075985',
+            primaryBorderColor: '#7dd3fc',
+            lineColor: '#475569',
+            secondaryColor: '#f1f5f9',
+            tertiaryColor: '#f8fafc',
+            fontSize: '16px',
+            fontFamily: 'Inter, system-ui, sans-serif'
+        },
+        securityLevel: 'loose'
+    });
+
+    const cache = {};
+
+    async function loadSection(fileName, element) {
+        const contentDiv = document.getElementById('content');
+        
+        // 更新导航状态
+        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+        if (element) {
+            element.classList.add('active');
+        } else {
+            const targetA = Array.from(document.querySelectorAll('.nav-links a')).find(a => a.getAttribute('onclick').includes(`'${fileName}'`));
+            if (targetA) targetA.classList.add('active');
+        }
+
+        // 动画重置
+        contentDiv.style.animation = 'none';
+        contentDiv.offsetHeight; // trigger reflow
+        contentDiv.style.animation = null;
+
+        contentDiv.innerHTML = '<div class="loading"><div class="spinner"></div>内容加载中...</div>';
+
+        try {
+            let markdown;
+            if (cache[fileName]) {
+                markdown = cache[fileName];
+            } else {
+                const response = await fetch(`./sections/${fileName}.md?t=${new Date().getTime()}`);
+                if (!response.ok) throw new Error(`无法读取文件: ${fileName}.md`);
+                markdown = await response.text();
+                cache[fileName] = markdown;
+            }
+
+            contentDiv.innerHTML = marked.parse(markdown);
+            Prism.highlightAll();
+
+            setTimeout(async () => {
+                const mermaidElements = document.querySelectorAll('.mermaid');
+                if (mermaidElements.length > 0) {
+                    try {
+                        await mermaid.run();
+                    } catch (e) {
+                        console.error("Mermaid 渲染失败:", e);
+                    }
+                }
+            }, 100);
+
+            document.querySelector('main').scrollTop = 0;
+
+        } catch (err) {
+            contentDiv.innerHTML = `<div class="error-box">
+                <h3 style="margin-top:0">🚨 加载失败</h3>
+                <p>无法读取内容文件。请检查 <code>sections/</code> 目录。</p>
+                <button onclick="loadSection('${fileName}')" style="background:var(--primary); color:white; border:none; padding:12px 24px; border-radius:12px; cursor:pointer; font-weight:600;">手动重试</button>
+            </div>`;
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            loadSection('00-cover');
+        }, 200);
+    });
+</script>
+
+</body>
+</html>
