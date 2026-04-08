@@ -11,7 +11,7 @@
       <span class="cover-title-accent">从辅助到自主</span>
     </h1>
     <p class="cover-manifesto">
-      面向公司内部研发团队的 AI Coding 技术分享，聚焦 Agent、CLI 与研发流程重塑，建立对下一代研发方式的共同认知。
+      面向公司内部研发团队的 AI Coding 技术分享，聚焦 Agent、Harness、CLI 与研发流程重塑，建立对下一代研发方式的共同认知。
     </p>
   </div>
 
@@ -28,6 +28,7 @@
       <span class="cover-meta-label">Focus</span>
       <div class="cover-focus-list">
         <span class="cover-tag">Concepts · 核心概念</span>
+        <span class="cover-tag">Harness · 执行底座</span>
         <span class="cover-tag">CLI Suite · 工具体系</span>
         <span class="cover-tag">SDLC Workflow · 流程闭环</span>
       </div>

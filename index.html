@@ -259,7 +259,15 @@
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
             overflow-x: auto;
         }
-        .mermaid { display: flex; justify-content: center; min-width: 800px; }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            min-width: 0;
+        }
+        .mermaid svg {
+            max-width: none;
+            height: auto;
+        }
 
         .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; color: #94a3b8; }
         .spinner { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin-bottom: 20px; }
@@ -580,8 +588,10 @@
         <a onclick="loadSection('00-cover', this)" class="active">欢迎与开场</a>
         <a onclick="loadSection('01-intro', this)">为什么是现在</a>
         <a onclick="loadSection('02-models', this)">先看模型层</a>
-        <a onclick="loadSection('03-cli', this)">为什么是 CLI / Agent</a>
         <a onclick="loadSection('02-terms', this)">最小术语表</a>
+        <a onclick="loadSection('03-cli', this)">为什么是 Agent / Harness / CLI</a>
+        <a onclick="loadSection('03-ccswitch', this)">CC Switch 实操</a>
+        <a onclick="loadSection('03-claude-tips', this)">Claude Code 15 个技巧</a>
         <a onclick="loadSection('04-sdlc', this)">研发闭环演示</a>
         <a onclick="loadSection('05-enterprise', this)">企业治理与边界</a>
         <a onclick="loadSection('06-future', this)">角色演进与结尾</a>
@@ -610,9 +620,9 @@
     marked.setOptions({ renderer });
 
     // 初始化 Mermaid
-    mermaid.initialize({ 
-        startOnLoad: false, 
-        theme: 'default', 
+    mermaid.initialize({
+        startOnLoad: false,
+        theme: 'default',
         themeVariables: {
             primaryColor: '#e0f2fe',
             primaryTextColor: '#075985',
@@ -620,8 +630,14 @@
             lineColor: '#475569',
             secondaryColor: '#f1f5f9',
             tertiaryColor: '#f8fafc',
-            fontSize: '16px',
+            fontSize: '15px',
             fontFamily: 'Inter, system-ui, sans-serif'
+        },
+        flowchart: {
+            htmlLabels: true,
+            useMaxWidth: false,
+            nodeSpacing: 38,
+            rankSpacing: 52
         },
         securityLevel: 'loose'
     });

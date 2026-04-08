@@ -51,7 +51,9 @@ bash ai-share.sh
 - `00-cover.md`：封面与开场
 - `01-intro.md`：为什么现在要讲 AI Coding
 - `02-terms.md`：最小术语表
-- `03-cli.md`：为什么是 CLI / Agent
+- `03-cli.md`：为什么是 Agent / Harness / CLI
+- `03-ccswitch.md`：CC Switch 实操
+- `03-claude-tips.md`：Claude Code 的 15 点实用技巧
 - `04-sdlc.md`：AI 如何进入研发闭环
 - `05-enterprise.md`：企业治理与边界
 - `06-future.md`：角色演进与结尾
