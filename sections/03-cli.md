@@ -29,17 +29,17 @@
 - 很适合承载“实现 -> 验证 -> 修复 -> 交付”的闭环。
 - 更接近真实软件工程，也更容易成为 harness 落地执行链路的典型入口。
 
-## 3. 三条产品路线
+## 3. 产品竞争为什么会转到执行体系
 
 如果说上一代 AI Coding 的竞争重点是“谁补全得更快、更准”，  
 那这一代的竞争重点已经变成：**谁更能把需求变成可执行、可验证、可交付的任务闭环。**
 
 所以今天比较 Claude Code、Codex、Gemini，不能只看模型能力，  
-也不能只看 CLI、IDE 或 Web 这些表面入口，而要看它们怎样把 agent 与 harness 组织成完整执行系统。
+也不能只看 CLI、IDE 或 Web 这些表面入口，而要看它们怎样把 agent 与 harness 组织成完整执行体系。
 
 ### 通用 AI Coding Agent / Harness 架构图
 
-无论是哪一家，今天的 AI Coding 本质上都在争四层能力；agent 负责决策与行动，真正把这四层串起来并落到现实系统里的执行底座，就是 harness：
+无论是哪一家，今天的 AI Coding 都可以先拆成四层：agent 负责决策与行动，真正把这四层串起来并落到现实系统里的执行底座，就是 harness。
 
 ```mermaid
 flowchart TB
@@ -47,12 +47,6 @@ flowchart TB
     S --> O[执行编排层<br/>任务拆解 / 工具调用 / 验证修复 / 并行代理]
     O --> C[上下文接入层<br/>代码库 / 终端 / 文档 / 浏览器 / 外部系统]
     C --> E[生态落地层<br/>团队规范 / 云平台 / 权限治理 / 自动化流程]
-
-    CC[Claude Code] -.重心.-> O
-    CX[Codex] -.重心.-> S
-    CX -.延伸.-> E
-    GM[Gemini] -.入口.-> S
-    GM -.重心.-> E
 ```
 
 - **交互表面层**：开发者从哪里进入 agent，比如 CLI、IDE、Web、云端任务。
@@ -60,29 +54,31 @@ flowchart TB
 - **上下文接入层**：agent 能读到哪些代码、终端、文档、浏览器和外部系统信息。
 - **生态落地层**：agent 最终怎样进入团队规范、云平台、权限治理和自动化流程。
 
-三家都在做 agent，但真正拉开体验差异的，往往是它们背后的 harness 设计。  
-区别不是“谁会不会写代码”，而是**谁把产品重心压在了哪一层，以及怎样把这些层真正组织成可执行系统**。
+真正拉开体验差异的，往往不是单一入口，而是背后的 harness 设计。  
+区别不是“谁会不会写代码”，而是**谁更能把这四层稳定地组织成执行体系**。
 
-## 4. Claude Code / Codex / Gemini：三条不同路线
+下一节再具体看 Claude Code、Codex、Gemini 各自把重心放在哪里。
 
-| 维度 | Claude Code | Codex | Gemini |
+## 4. Claude Code / Codex / Gemini：三种执行体系的不同组织方式
+
+这三者都在做 coding agent，但它们组织执行体系的方式并不一样。  
+所以这里不是比“有没有同一个功能”，而是比：**各自如何把流程复用、外部能力、执行链路、并行与隔离组织起来。**
+
+| 职责层 | Claude Code | Codex | Gemini |
 | :--- | :--- | :--- | :--- |
-| **主战场压在哪** | 执行编排 | 多表面统一入口 | Google 生态联动 |
-| **核心产品思路** | 把 agent 做成可编排开发系统 | 把 coding agent 覆盖到 CLI / IDE / Cloud | 把 coding agent 嵌进 IDE + Cloud + Google 工具链 |
-| **代表性能力组织方式** | Skills / Hooks / MCP / Subagents | CLI + IDE + cloud tasks + parallel environments | Gemini CLI + Gemini Code Assist + Google Cloud |
-| **一个最能说明路线差异的例子** | 子代理做 code review，hooks 拦截关键动作，MCP 拉外部上下文 | 本地提任务，云端独立环境执行，并行环境回收结果 | Cloud Shell 直接运行 CLI，BigQuery Studio / Apigee 直接调用 agent 能力 |
-| **更适合解决的问题** | 流程闭环、规范沉淀、团队复用 | 跨环境一致体验、远程执行、任务分发 | 长上下文理解、云上开发、Google 生态协同 |
-| **核心定位** | 可编排代理系统 | 统一 coding agent 产品面 | 生态驱动的 coding agent |
+| **流程复用 / 项目规则** | 官方明确有 `Skills`；也有 `Hooks` 在生命周期事件自动触发规则 | 官方明确有 `AGENTS.md` 作为 repo-specific instructions | 官方资料目前更强调 `agent mode` 与工具调用，本页不把它写成和 `Skills` / `AGENTS.md` 对等的项目规则机制 |
+| **外部能力接入** | 官方明确有 `MCP servers` | 这页不把 Codex 写成 `MCP` 架构 | 官方明确有 `built-in tools` 和 `MCP servers` |
+| **工具 / 执行链路** | 官方明确有 `agentic loop` 和 `agentic harness`；执行链路由 harness 组织，能力入口包括 `Skills`、`LSP`、`Subagents`、`MCP` 等 | 官方明确有 cloud env 执行链：`container → setup script → agent phase → validation` | 官方明确有 `Gemini CLI`、`Gemini Code Assist`、`agent mode`、`built-in tools`、`MCP servers` |
+| **并行 / 隔离** | 官方明确有 `Subagents`；也有 `isolation: worktree` | 官方明确有 `subagents`；cloud tasks 运行在 `container` 中；本地有 `sandboxing` 模式 | 官方最稳的是 `Cloud Shell`：`temporary VM`，也支持 `ephemeral mode` |
+| **官方产品表面** | 官方资料更强调 `Claude Code` 作为 CLI 型 `agentic harness` 与可编排能力组织 | 官方明确有 `App / IDE Extension / CLI / Web` | 官方明确有 `Gemini CLI`、`Gemini Code Assist` 等产品表面 |
 
-- **Claude Code** 更像在做开发代理操作系统：重点不是一个入口，而是如何把能力编排成稳定工作流。
-- **Codex** 更像在做统一 coding agent 产品层：重点是同一个 agent 能跨 CLI、IDE、云任务工作。
-- **Gemini** 更像在做生态联动型 coding agent：重点是把 CLI、IDE、Google Cloud 串成一条开发链路。
+> 这不是同名功能对比，而是三套执行体系在相近职责层上的对照。
 
-### 这些路线具体是怎么工作的？
+- **Claude Code** 的官方资料最清楚地呈现出一套由 `Skills / Hooks / MCP / Subagents / Worktree / LSP / harness` 组成的执行体系。
+- **Codex** 的官方资料更清楚地强调 `cloud environments`、`subagents`、`sandboxing` 和多表面产品形态。
+- **Gemini** 的官方资料更清楚地强调 `Gemini CLI`、`Gemini Code Assist agent mode`、`built-in tools / MCP servers` 和 Google Cloud / 产品集成表面。
 
-- **Claude Code**：你可以把 code review 做成一个专职子代理，写完代码后自动调用 reviewer；再用 hook 拦截危险命令，最后再通过 MCP 去拿 GitHub issue 或内部文档。重点不是“它会不会回答”，而是“它能不能把规则、工具、分工编排成流程”。
-- **Codex**：你在本地提一个 bug 修复任务，真正执行发生在云端独立环境里；如果有三个任务，可以扔给三个并行环境同时做，最后你回来统一审结果。重点不是“CLI 本身”，而是“统一入口 + 云端异步执行”。
-- **Gemini**：Gemini CLI 可以直接在 Cloud Shell 里跑，这意味着 agent 一开始就站在云端环境里；另一边 Gemini Code Assist 还能直接出现在 BigQuery Studio 或 Apigee 这样的云产品里，直接利用表元数据、API 规范这些云侧上下文。重点不是“单一工具”，而是“把 agent 植入云控制面与产品工作流”。
+所以它们真正的差异，不在“会不会写代码”，而在**怎样把复用、连接、执行、并行、隔离组织成系统**。
 
 ## 5. 工程师如何选择
 

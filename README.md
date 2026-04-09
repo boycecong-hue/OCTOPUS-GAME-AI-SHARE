@@ -51,14 +51,14 @@ bash ai-share.sh
 - `00-cover.md`：封面与开场
 - `01-intro.md`：为什么现在要讲 AI Coding
 - `02-models.md`：先看模型层
-- `03-cli.md`：产品与执行体系（Agent / Harness / CLI）
-- `02-terms.md`：调用链路与执行机制
-- `03-ccswitch.md`：CC Switch 配置中枢
-- `03-claude-tips.md`：Claude Code 高频技巧
-- `04-sdlc.md`：AI 如何进入研发闭环
+- `03-cli.md`：产品与执行体系（为什么竞争转到执行体系）
+- `02-terms.md`：调用链路与执行机制（Harness 如何组织执行能力）
+- `03-ccswitch.md`：CC Switch（个人 AI 工作台的统一控制台）
+- `03-claude-tips.md`：Claude Code 的 15 点实用技巧
+- `04-sdlc.md`：AI 如何真正进入研发闭环
 - `06-future.md`：角色演进与结尾
 
-如果新增、重命名或调整章节顺序，需要同步更新 `index.html` 中的导航配置与封面后的讲述路径。 
+如果新增、重命名或调整章节顺序，需要同步更新 `index.html` 中的导航配置，以及 `sections/01-intro.md` 里的“讲述路径”说明。 
 
 ## 注意事项
 - 这是纯静态项目，没有构建步骤，也没有测试框架。
