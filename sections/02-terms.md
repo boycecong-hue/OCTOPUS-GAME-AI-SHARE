@@ -1,26 +1,39 @@
-# 调用链路与执行机制：Hooks、MCP 与 Harness
+# 调用链路与执行机制：Claude Code 如何组织执行能力
 
 ## 前言
 
 上一章已经先讲清楚：为什么今天真正的竞争，不再只是模型强弱，而是产品如何把 Agent、Harness 和执行入口组织成系统。
 
-接下来再往里拆：在 Claude Code、Agent Runtime、AI Coding、MCP 这些语境里，很多人会同时看到这些概念：
+这一章继续往里拆，但重点不再是逐个解释名词，而是回答两个更关键的问题：
 
+> 模型 / Agent 负责决定下一步，Harness 负责把不同能力组织成可执行路径；那么 Claude Code 到底是怎样把这些能力编排成执行体系的？
+
+上一页已经把 Agent、Harness、Hook、MCP、Tools、LSP 放进同一张运行时图里；这一页往前再推一步，把它们放回更完整的执行体系分层里理解。
+
+在这个模块里，最容易被混在一起的概念有：
+
+- Skills
 - Hooks
 - MCP Servers
 - Tools
 - LSP
+- Subagents
+- Worktree
 - Harness
 
-它们经常一起出现，但各自扮演的角色并不一样。
+它们经常一起出现，但并不处在同一层，也不解决同一类问题。
 
 先看最核心的分工：
 
-- **Hooks** 负责“在关键时机自动做什么”
-- **MCP Servers** 负责“系统可以连接哪些外部能力”
-- **Harness** 负责“把模型、规则、工具、MCP、上下文组织成一个可运行的执行闭环”
+- **LSP** 负责“让 AI 更准确理解代码结构和符号关系”
+- **Skills** 负责“把可重复工作流沉淀成稳定流程”
+- **Hooks** 负责“在关键时机自动触发动作”
+- **MCP Servers** 负责“把系统接到外部能力”
+- **Subagents** 负责“把复杂任务并行拆开并隔离上下文”
+- **Worktree** 负责“把并行任务的改动隔离在独立工作区”
+- **Harness** 负责“把这些能力组织成一个可运行的执行闭环”
 
-这份文档的重点，是把它们之间的运行关系讲清楚。
+这份文档的重点，不是逐个背术语，而是把这些能力放回同一个执行体系里理解。
 
 ---
 
@@ -35,15 +48,15 @@ sequenceDiagram
     participant Model as 模型
     participant Harness as Harness
     participant Hook as Hook
-    participant Tooling as Tools / MCP / LSP
+    participant Capability as Skills / Tools / MCP / LSP / Subagent
 
     User->>Model: 提出请求
     Model->>Model: 理解需求并决定下一步
     Model->>Harness: 进入执行阶段
     Harness->>Hook: 执行前检查
     Hook-->>Harness: 允许继续
-    Harness->>Tooling: 调用本地工具 / MCP / LSP
-    Tooling-->>Harness: 返回结果
+    Harness->>Capability: 调用本地工具 / Skill / MCP / LSP / 子代理
+    Capability-->>Harness: 返回结果
     Harness->>Hook: 执行后处理
     Hook-->>Model: 返回结果
     Model->>Model: 继续推理或决定结束
@@ -57,70 +70,29 @@ sequenceDiagram
 - Hooks 在关键时机自动介入
 - MCP Servers 在需要时提供外部能力
 
-### Mermaid 图 1：整体分层与组件关系
+### Mermaid 图 1：Claude Code 执行体系能力分层图
 
 ```mermaid
 flowchart TB
-    U[用户]
-    UI[Claude Code\nCLI / UI]
-    M[模型\n理解 / 推理 / 决策]
+    A["Claude Code 执行体系"] --> B["理解层"]
+    A --> C["执行编排层"]
+    A --> D["扩展与隔离层"]
 
-    subgraph H[Harness 运行时]
-        C[上下文\nPrompt / Rules / Memory / Summary]
-        R[调度\nTool / MCP / LSP / Agent]
-        P[权限\nApproval / Sandbox / Safety]
-        HP[Hooks\nStart / Pre / Post / Stop]
-    end
+    B --> B1["LSP<br/>更懂代码结构"]
 
-    subgraph E[执行能力]
-        T[本地工具\nRead / Edit / Write / Bash / Grep / Glob]
-        L[LSP\nclangd / swift-lsp]
-        A[Skills / Agents\n工作流与子代理]
-        MCP[MCP Servers\ngithub / context7 / exa / memory / playwright]
-    end
+    C --> C1["Skill<br/>沉淀可复用流程"]
+    C --> C2["Hook<br/>在事件点自动触发动作"]
+    C --> C3["Harness<br/>统一调度与控制"]
 
-    subgraph X[外部系统]
-        FS[文件系统 / 仓库]
-        GH[GitHub]
-        DOCS[文档 / 知识源]
-        WEB[浏览器 / 网页]
-        MEM[持久记忆]
-        OTHERS[其他系统]
-    end
-
-    U --> UI --> M
-    M --> C
-    C --> R
-    R --> P
-    P --> HP
-
-    HP --> T
-    HP --> L
-    HP --> A
-    HP --> MCP
-
-    T --> FS
-    L --> FS
-    MCP --> GH
-    MCP --> DOCS
-    MCP --> WEB
-    MCP --> MEM
-    MCP --> OTHERS
-
-    FS --> T
-    FS --> L
-    GH --> MCP
-    DOCS --> MCP
-    WEB --> MCP
-    MEM --> MCP
-    OTHERS --> MCP
-
-    T --> M
-    L --> M
-    A --> M
-    MCP --> M
-    M --> UI --> U
+    D --> D1["MCP<br/>连接外部系统能力"]
+    D --> D2["Subagent<br/>并行拆解与独立复核"]
+    D --> D3["Worktree<br/>隔离工作区与改动范围"]
 ```
+
+- `LSP` 解决“AI 怎么更准确看懂代码”。
+- `Skill` 和 `Hook` 解决“执行流程怎么被组织起来”。
+- `MCP`、`Subagent`、`Worktree` 解决“外部连接、并行推进和安全隔离”。
+- `Harness` 把这些能力统一编排成可持续运行的执行闭环。
 
 ### Mermaid 图 2：一次完整请求的时序图
 
@@ -290,60 +262,29 @@ flowchart TB
     LSP --> L2
 ```
 
-### Mermaid 图 5：Hook 与 MCP 的职责对比图
+### Mermaid 图 5：执行体系能力边界图
 
 ```mermaid
-flowchart TB
-    subgraph HookSide[Hooks]
-        H0[本质\n生命周期回调]
-        H1[关注点\n什么时候触发]
-        H2[典型事件\nStart / PreToolUse\nPostToolUse / Stop]
-        H3[职责\n检查 / 拦截\n记录 / 收尾]
-        H4[不负责\n直接提供\nGitHub / 浏览器 / 文档能力]
-    end
-
-    subgraph MCPSide[MCP Servers]
-        M0[本质\n外部能力协议后端]
-        M1[关注点\n系统能接入什么能力]
-        M2[典型服务\ngithub / context7 / exa\nmemory / playwright]
-        M3[职责\n访问外部系统\n返回结构化结果]
-        M4[不负责\n决定何时调用\n是否允许调用]
-    end
-
-    subgraph HarnessSide[Harness]
-        R0[统一调度]
-        R1[串起模型 / Hook / MCP / Tool / LSP]
-        R2[决定执行路径并维持闭环]
-    end
-
-    HookSide --> HarnessSide
-    MCPSide --> HarnessSide
+flowchart LR
+    L["LSP\n理解代码"] --> H["Harness\n统一调度"]
+    S["Skill\n复用流程"] --> H
+    HK["Hook\n控制时机"] --> H
+    M["MCP\n连接外部能力"] --> H
+    SA["Subagent\n并行拆解"] --> H
+    W["Worktree\n隔离改动"] --> SA
 ```
 
-### Mermaid 图 6：Hook 与 MCP 在一次调用中的协作位置
+这张图的作用不是解释一次调用的每一个细节，而是帮助听众快速建立一个判断：
 
-```mermaid
-flowchart TB
-    Q[用户请求] --> M[模型决定下一步]
-    M --> H[Harness 选择路径]
-    H --> PH[PreToolUse\n执行前\n检查]
-    PH --> D{通过了吗?}
-    D -->|否| B[拦截 / 请求确认]
-    D -->|是| X[调用 MCP 或本地工具]
-    X --> E[外部系统 / 文件系统\n浏览器 / GitHub / Docs]
-    E --> R[结果返回]
-    R --> PO[PostToolUse / Failure\n执行后\n处理]
-    PO --> M2[模型继续分析]
-    M2 --> Done{任务完成?}
-    Done -->|否| H
-    Done -->|是| End[Stop / SessionEnd 收尾]
-```
+- `LSP / Skill / Hook / MCP / Subagent / Worktree` 是不同维度的能力
+- `Harness` 负责把这些能力组织起来
+- Claude Code 的执行系统价值来自编排，而不是单点功能
 
-这 3 张新增图分别适合：
+这组图分别适合：
 
-- 图 4：讲清 Claude Code 里“插件 → 能力层 → 具体能力”的映射关系
-- 图 5：快速解释 Hook 和 MCP 不是一类东西
-- 图 6：直观看 Hook 和 MCP 在一次调用里各自处在什么位置
+- 图 1：先建立 Claude Code 执行体系的能力分层坐标
+- 图 2：再看一次真实请求如何经过 harness 进入执行阶段
+- 图 5：最后用能力边界图说明各层能力不是同一种东西
 
 ---
 
@@ -727,126 +668,66 @@ MCP server 的核心定位是：
 
 ---
 
-## 十三、Hooks 和 MCP 的根本区别
+## 十三、六类能力与 Harness 的根本分工
 
-这两者虽然经常一起出现，但职责完全不同。
+如果只记一句：
 
-### Hooks 更关心“时机”
-
-它回答的问题是：
-
-- 在什么时候自动做点什么？
-- 在动作前后要不要拦截、校验、收尾？
-
-### MCP 更关心“能力”
-
-它回答的问题是：
-
-- 系统到底能访问什么外部能力？
-- 这些能力通过什么协议暴露给 harness？
+> Claude Code 的差异，不在单点功能，而在能否把理解、执行、触发、连接、并行、隔离组织成闭环。
 
 可以这样记：
 
-- Hook = 生命周期控制
-- MCP = 外部能力提供者
+- `LSP` 更关心“看懂代码”
+- `Skill` 更关心“复用流程”
+- `Hook` 更关心“在什么时机自动发生动作”
+- `MCP` 更关心“系统能接入什么外部能力”
+- `Subagent` 更关心“复杂任务如何并行拆开”
+- `Worktree` 更关心“并行任务如何安全隔离改动”
+- `Harness` 更关心“如何把以上能力调度成一条可持续运行的执行链路”
 
-它们经常会配合，但不在同一层。
+所以不要把 `Skill / Hook / MCP` 当成同类能力去比较。
 
-例如一条真实链路可能是：
+更准确的理解是：
 
-1. 模型决定调用 GitHub 能力
-2. `PreToolUse` hook 先检查这次调用
-3. Harness 调用 GitHub MCP
-4. GitHub MCP 真正访问 GitHub
-5. 返回结果
-6. `PostToolUse` hook 再进行收尾或记录
-
-所以：
-
-- Hook 在管流程边界
-- MCP 在提供工具能力
+- `Skill` 在沉淀流程
+- `Hook` 在控制时机
+- `MCP` 在接入能力
+- `Harness` 在组织闭环
 
 ---
 
-## 十四、再用一个具体例子串起来
+## 十四、再用审批流案例串起来
 
-我们用两个场景分别说明。
-
-### 场景一：查文档
-
-用户说：
-
-> 帮我查 React `useEffect` 的最新官方写法
-
-系统链路可以改成一张更适合演示的时序图：
+场景：给内部审批系统新增“AI 初稿后需人工确认”节点。
 
 ```mermaid
-sequenceDiagram
-    autonumber
-    actor User as 用户
-    participant Model as 模型
-    participant Harness as Harness
-    participant Hook as Pre/Post Hook
-    participant Ctx7 as Context7 MCP
-    participant Docs as 文档源
+flowchart TB
+    Goal["新增审批节点目标"] --> L["LSP<br/>理解状态机 / 调用链"]
+    Goal --> S["Skill<br/>复用标准执行流程"]
+    Goal --> H["Hook<br/>运行时检查与守门"]
+    Goal --> M["MCP<br/>连接外部系统"]
+    Goal --> SA["Subagent<br/>并行分析"]
+    Goal --> W["Worktree<br/>隔离方案改动"]
 
-    User->>Model: 查 React useEffect 最新写法
-    Model->>Harness: 判断为文档查询任务
-    Harness->>Hook: 执行前检查
-    Hook-->>Harness: 允许继续
-    Harness->>Ctx7: 调用 Context7 MCP
-    Ctx7->>Docs: 查询相关文档
-    Docs-->>Ctx7: 返回结果
-    Ctx7-->>Harness: 返回结构化内容
-    Harness->>Hook: 执行后处理
-    Hook-->>Model: 返回结果
-    Model-->>User: 组织答案并输出
+    L --> R["形成可推进的执行闭环"]
+    S --> R
+    H --> R
+    M --> R
+    SA --> R
+    W --> R
 ```
 
-### 场景二：查网页问题
+在这个例子里：
 
-用户说：
+- `LSP` 帮助 AI 先理解现有审批流状态机、接口关系与前后端调用链。
+- `Skill` 复用“分析 → 计划 → 实施 → 验证”的标准执行流程。
+- `Hook` 在计划执行、工具调用、验证失败等运行时关键节点自动触发检查或补充动作。
+- `MCP` 连接 GitHub、文档、浏览器或任务系统等外部能力。
+- `Subagent` 把代码检索、影响分析、独立复核等任务并行拆开。
+- `Worktree` 让不同方案或并行任务在独立工作区中推进，避免互相污染。
 
-> 帮我打开页面看看为什么按钮点不了
+所以这一章真正想讲清楚的是：
 
-系统链路可以改成一张更直观的时序图：
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as 用户
-    participant Model as 模型
-    participant Harness as Harness
-    participant Hook as Pre/Post Hook
-    participant PW as Playwright MCP
-    participant Browser as 浏览器页面
-
-    User->>Model: 打开页面并分析按钮异常
-    Model->>Harness: 判断需要浏览器自动化
-    Harness->>Hook: 执行前检查
-    Hook-->>Harness: 允许继续
-    Harness->>PW: 调用 Playwright MCP
-    PW->>Browser: 打开页面
-    Browser-->>PW: 返回快照 / DOM / console / network
-    PW-->>Harness: 返回结构化结果
-    Harness->>Hook: 执行后处理
-    Hook-->>Model: 返回结果
-    Model->>Harness: 决定继续点击按钮
-    Harness->>PW: 再次调用 Playwright MCP
-    PW->>Browser: 点击按钮并观察结果
-    Browser-->>PW: 返回报错或行为结果
-    PW-->>Model: 返回结果
-    Model-->>User: 整理结论并答复
-```
-
-这两个例子能很好地说明一件事：
-
-- Hook 不是干活的人
-- MCP 不是做决策的人
-- Harness 不是具体外部系统
-- 模型也不是自己直接操作浏览器或 GitHub
-
-它们是一起协作的。
+> Claude Code 的价值，不是“某一个功能会不会用”，而是这些能力叠加之后，能不能把任务推进成闭环。
 
 ---
 
@@ -854,9 +735,9 @@ sequenceDiagram
 
 如果要把这整套关系压缩成一句话，最推荐记住的是：
 
-> Hook 决定“在什么时候自动检查或处理”，MCP 决定“系统能调用哪些外部能力”，Harness 则把模型、Hooks、MCP、工具和上下文组织成一个可持续运行的执行闭环。
+> 模型 / Agent 负责决定下一步，Harness 负责把理解、执行、触发、连接、并行、隔离这些能力组织成闭环。
 
-这是理解 Claude Code、Agent Runtime、MCP 工具链时最核心的一句话。
+这才是理解 Claude Code、Agent Runtime 和执行体系时最核心的一句话。
 
 ---
 
@@ -866,28 +747,32 @@ sequenceDiagram
 
 <div class="role-grid">
   <div class="role-card">
-    <div class="role-card-label">模型</div>
-    <div class="role-card-value">决定下一步</div>
+    <div class="role-card-label">LSP</div>
+    <div class="role-card-value">理解代码结构</div>
   </div>
   <div class="role-card">
-    <div class="role-card-label">Hooks</div>
-    <div class="role-card-value">在关键时机自动干预</div>
+    <div class="role-card-label">Skill</div>
+    <div class="role-card-value">沉淀可复用流程</div>
   </div>
   <div class="role-card">
-    <div class="role-card-label">Harness</div>
-    <div class="role-card-value">统一调度与控制</div>
+    <div class="role-card-label">Hook</div>
+    <div class="role-card-value">在关键时机自动触发</div>
   </div>
   <div class="role-card">
     <div class="role-card-label">MCP</div>
-    <div class="role-card-value">提供外部能力</div>
+    <div class="role-card-value">连接外部系统能力</div>
   </div>
   <div class="role-card">
-    <div class="role-card-label">LSP</div>
-    <div class="role-card-value">提供代码智能</div>
+    <div class="role-card-label">Subagent</div>
+    <div class="role-card-value">并行拆解与独立复核</div>
   </div>
   <div class="role-card">
-    <div class="role-card-label">Tools</div>
-    <div class="role-card-value">执行具体动作</div>
+    <div class="role-card-label">Worktree</div>
+    <div class="role-card-value">隔离工作区与改动范围</div>
+  </div>
+  <div class="role-card">
+    <div class="role-card-label">Harness</div>
+    <div class="role-card-value">统一调度并维持闭环</div>
   </div>
 </div>
 
@@ -901,24 +786,17 @@ sequenceDiagram
 
 从这个角度看：
 
-- Hooks 让系统具备纪律性和自动化边界
-- MCP 让系统具备外部能力连接性
-- Harness 让整套机制形成闭环并可持续运行
+- `LSP` 提供更强的代码理解能力
+- `Skill` 提供可复用的流程沉淀能力
+- `Hook` 提供事件驱动的自动触发能力
+- `MCP` 提供外部系统连接能力
+- `Subagent` 和 `Worktree` 提供并行推进与安全隔离能力
+- `Harness` 则把整套机制真正组织成执行闭环
 
-所以当你看到：
-
-- `PreToolUse`
-- `PostToolUse`
-- `SessionStart`
-- `github`
-- `context7`
-- `playwright`
-- `memory`
-
-这些名字时，不要把它们看成孤立的功能点。
+所以当你看到这些名字时，不要把它们看成孤立的功能点。
 
 更贴近运行机制的理解是：
 
-> 它们都是同一套 harness 执行体系中不同层次的组件，各自负责不同的职责，但共同支撑了模型从“思考”走向“行动”的过程。
+> 它们都是同一套 Claude Code 执行体系中不同层次的组件，各自负责不同职责，但共同支撑了模型从“思考”走向“行动”的过程。
 
 理解完这套调用链路后，再去看 CC Switch 这类个人 AI 工作台中枢，就更容易明白：它管理的不是单个模型，而是整套 AI Coding 执行环境里的工具、配置和常用环境。 
