@@ -1,4 +1,4 @@
-# 调用链路与执行机制：Claude Code 如何组织执行能力
+# 调用链路与执行机制：Harness 如何组织执行能力
 
 ## 前言
 
@@ -6,9 +6,9 @@
 
 这一章继续往里拆，但重点不再是逐个解释名词，而是回答两个更关键的问题：
 
-> 模型 / Agent 负责决定下一步，Harness 负责把不同能力组织成可执行路径；那么 Claude Code 到底是怎样把这些能力编排成执行体系的？
+> 模型 / Agent 负责决定下一步，Harness 负责把不同能力组织成可执行路径；那么这个运行时抽象到底是怎样把具体能力编排成执行体系的？
 
-上一页已经把 Agent、Harness、Hook、MCP、Tools、LSP 放进同一张运行时图里；这一页往前再推一步，把它们放回更完整的执行体系分层里理解。
+上一页已经把 Agent、Harness、Hook、MCP、Tools、LSP 放进同一张运行时图里；这一页往前再推一步，把具体能力和 `Harness` 这个运行时抽象拆开来看。
 
 在这个模块里，最容易被混在一起的概念有：
 
@@ -19,7 +19,8 @@
 - LSP
 - Subagents
 - Worktree
-- Harness
+
+而 `Harness` 不是上面其中一个具体能力点，它更像围绕模型的执行封装层：负责把工具、上下文、权限与运行环境组织起来，让 Agent 真正进入可执行状态。
 
 它们经常一起出现，但并不处在同一层，也不解决同一类问题。
 
@@ -31,9 +32,8 @@
 - **MCP Servers** 负责“把系统接到外部能力”
 - **Subagents** 负责“把复杂任务并行拆开并隔离上下文”
 - **Worktree** 负责“把并行任务的改动隔离在独立工作区”
-- **Harness** 负责“把这些能力组织成一个可运行的执行闭环”
 
-这份文档的重点，不是逐个背术语，而是把这些能力放回同一个执行体系里理解。
+这份文档的重点，不是逐个背术语，而是先分清具体能力，再理解 `Harness` 如何把它们组织成同一个执行体系。
 
 ---
 
@@ -48,7 +48,7 @@ sequenceDiagram
     participant Model as 模型
     participant Harness as Harness
     participant Hook as Hook
-    participant Capability as Skills / Tools / MCP / LSP / Subagent
+    participant Capability as Skill / Tool / MCP / LSP / Subagent
 
     User->>Model: 提出请求
     Model->>Model: 理解需求并决定下一步
@@ -70,20 +70,23 @@ sequenceDiagram
 - Hooks 在关键时机自动介入
 - MCP Servers 在需要时提供外部能力
 
-### Mermaid 图 1：Claude Code 执行体系能力分层图
+### Mermaid 图 1：具体能力分层与 Harness 运行时抽象
 
 ```mermaid
 flowchart TB
-    A["Claude Code 执行体系"] --> B["理解层"]
-    A --> C["执行编排层"]
-    A --> D["扩展与隔离层"]
+    M["Model / Agent<br/>决定下一步"] --> O
+
+    subgraph H["Harness Runtime / 执行封装层"]
+        O["调度 / 权限 / 上下文管理"]
+    end
+
+    O --> B["理解辅助"]
+    O --> C["流程编排"]
+    O --> D["扩展与隔离"]
 
     B --> B1["LSP<br/>更懂代码结构"]
-
     C --> C1["Skill<br/>沉淀可复用流程"]
     C --> C2["Hook<br/>在事件点自动触发动作"]
-    C --> C3["Harness<br/>统一调度与控制"]
-
     D --> D1["MCP<br/>连接外部系统能力"]
     D --> D2["Subagent<br/>并行拆解与独立复核"]
     D --> D3["Worktree<br/>隔离工作区与改动范围"]
@@ -92,7 +95,7 @@ flowchart TB
 - `LSP` 解决“AI 怎么更准确看懂代码”。
 - `Skill` 和 `Hook` 解决“执行流程怎么被组织起来”。
 - `MCP`、`Subagent`、`Worktree` 解决“外部连接、并行推进和安全隔离”。
-- `Harness` 把这些能力统一编排成可持续运行的执行闭环。
+- `Harness` 不和这些能力并列；它包住这些能力入口，负责调度、权限和上下文管理。
 
 ### Mermaid 图 2：一次完整请求的时序图
 
@@ -146,52 +149,36 @@ sequenceDiagram
     UI-->>User: 展示结果
 ```
 
-### Mermaid 图 3：Harness 的决策流与分支路径
+### Mermaid 图 3：Harness 如何编排能力路径
 
 ```mermaid
 flowchart TD
     S[收到请求] --> N1[模型理解意图]
-    N1 --> N2{任务类型?}
+    N1 --> N2[Harness 汇总上下文\nRules / Memory / Permissions / Plugins]
+    N2 --> N3[触发 PreToolUse / 权限检查]
+    N3 --> N4{允许继续?}
 
-    N2 -->|读写代码| N3[优先本地工具]
-    N2 -->|代码智能| N4[优先 LSP]
-    N2 -->|外部系统| N5[优先 MCP]
-    N2 -->|复杂流程| N6[考虑 Skill / Agent]
+    N4 -->|否| N5[阻止执行 / 请求确认]
+    N5 --> N1
 
-    N3 --> N7[Harness 汇总上下文\nRules / Memory\nPermissions / Plugins]
-    N4 --> N7
-    N5 --> N7
-    N6 --> N7
+    N4 -->|是| N6{选择能力路径}
+    N6 -->|读写代码| N7[本地工具]
+    N6 -->|代码智能| N8[LSP]
+    N6 -->|外部系统| N9[MCP]
+    N6 -->|复杂流程| N10[Skill / Subagent]
 
-    N7 --> N8[触发 PreToolUse]
-    N8 --> N9{通过检查?}
+    N7 --> N11[结果回到 Harness]
+    N8 --> N11
+    N9 --> N11
+    N10 --> N11
 
-    N9 -->|否| N10[阻止执行 / 请求确认]
-    N10 --> N11[模型重新决策]
-
-    N9 -->|是| N12{调用哪类能力?}
-    N12 -->|本地工具| N13[Read / Edit / Write / Bash / Grep]
-    N12 -->|LSP| N14[定义 / 引用 / 符号]
-    N12 -->|MCP| N15[github / context7 / memory / playwright]
-    N12 -->|Agent / Skill| N16[进入子流程]
-
-    N13 --> N17[拿到结果]
-    N14 --> N17
-    N15 --> N17
-    N16 --> N17
-
-    N17 --> N18{执行成功?}
-    N18 -->|成功| N19[触发 PostToolUse]
-    N18 -->|失败| N20[触发 PostToolUseFailure]
-
-    N19 --> N21[结果回到模型]
-    N20 --> N21
-
-    N21 --> N22{任务完成?}
-    N22 -->|否| N23[继续 Think → Act → Observe]
-    N23 --> N7
-    N22 -->|是| N24[触发 Stop / SessionEnd]
-    N24 --> N25[保存摘要 / 清理状态 / 输出结果]
+    N11 --> N12[PostToolUse / Failure]
+    N12 --> N13[结果回到模型]
+    N13 --> N14{任务完成?}
+    N14 -->|否| N15[继续 Think → Act → Observe]
+    N15 --> N2
+    N14 -->|是| N16[Stop / SessionEnd]
+    N16 --> N17[保存摘要 / 清理状态 / 输出结果]
 ```
 
 这些图可以配合正文一起看：
@@ -204,7 +191,7 @@ flowchart TD
 
 ```mermaid
 flowchart TB
-    CC[Claude Code / Harness]
+    CC[Claude Code]
 
     subgraph Plugins[Plugins]
         P1[chrome-devtools-mcp]
@@ -216,12 +203,15 @@ flowchart TB
         P7[plugin-C]
     end
 
-    subgraph CapabilityLayers[能力层]
-        S[Skills\n工作流]
-        AG[Agents\n子代理]
-        HK[Hooks\n生命周期自动化]
-        MCP[MCP Servers\n外部能力]
-        LSP[LSP Servers\n语言智能]
+    subgraph CapabilityLayers[具体能力层]
+        S[Skill\n工作流]
+        AG[Subagent\n子代理]
+        HK[Hook\n生命周期自动化]
+        MCP[MCP\n外部能力]
+        LSP[LSP\n语言智能]
+    end
+
+    subgraph RuntimeContext[运行时上下文 / 约束]
         CMD[Commands / Rules / Memory]
     end
 
@@ -265,26 +255,33 @@ flowchart TB
 ### Mermaid 图 5：执行体系能力边界图
 
 ```mermaid
-flowchart LR
-    L["LSP\n理解代码"] --> H["Harness\n统一调度"]
-    S["Skill\n复用流程"] --> H
-    HK["Hook\n控制时机"] --> H
-    M["MCP\n连接外部能力"] --> H
-    SA["Subagent\n并行拆解"] --> H
-    W["Worktree\n隔离改动"] --> SA
+flowchart TB
+    M["Model / Agent<br/>决定下一步"] --> O
+
+    subgraph H["Harness Runtime / 执行封装层"]
+        O["调度 / 权限 / 上下文管理"]
+    end
+
+    O --> L["LSP<br/>理解代码"]
+    O --> S["Skill<br/>复用流程"]
+    O --> HK["Hook<br/>运行时守门"]
+    O --> MCP["MCP<br/>连接外部能力"]
+    O --> SA["Subagent<br/>并行拆解"]
+    O --> W["Worktree<br/>隔离工作区"]
 ```
 
 这张图的作用不是解释一次调用的每一个细节，而是帮助听众快速建立一个判断：
 
-- `LSP / Skill / Hook / MCP / Subagent / Worktree` 是不同维度的能力
-- `Harness` 负责把这些能力组织起来
+- `LSP / Skill / Hook / MCP / Subagent / Worktree` 是不同维度的具体能力
+- `Harness` 是把这些能力组织起来的执行封装层，不是并列的第七层能力
 - Claude Code 的执行系统价值来自编排，而不是单点功能
 
 这组图分别适合：
 
-- 图 1：先建立 Claude Code 执行体系的能力分层坐标
+- 图 1：先建立“具体能力 + Harness 执行封装层”的总体关系
 - 图 2：再看一次真实请求如何经过 harness 进入执行阶段
-- 图 5：最后用能力边界图说明各层能力不是同一种东西
+- 图 3：补上 harness 如何选择能力路径并维持循环
+- 图 5：最后用边界图强调 Harness 不是并列能力点
 
 ---
 
@@ -352,7 +349,7 @@ Harness 会基于这些条件，判断：
 - 是否要请求用户授权
 - 是否应该优先走 MCP、LSP 还是本地工具
 
-所以 harness 不是一个单点功能，而是一整层执行控制与调度机制。
+所以 `Harness` 不是一个单点功能，而是围绕模型的执行封装层：负责把执行控制、调度、权限和上下文管理组织起来。
 
 ---
 
@@ -668,7 +665,7 @@ MCP server 的核心定位是：
 
 ---
 
-## 十三、六类能力与 Harness 的根本分工
+## 十三、六类具体能力与 Harness 的组织关系
 
 如果只记一句：
 
@@ -682,16 +679,17 @@ MCP server 的核心定位是：
 - `MCP` 更关心“系统能接入什么外部能力”
 - `Subagent` 更关心“复杂任务如何并行拆开”
 - `Worktree` 更关心“并行任务如何安全隔离改动”
-- `Harness` 更关心“如何把以上能力调度成一条可持续运行的执行链路”
 
-所以不要把 `Skill / Hook / MCP` 当成同类能力去比较。
+而 `Harness` 不更像第七类具体能力；它更像围绕模型的执行封装层，负责调度这些能力、维持权限约束，并把执行链路组织成闭环。
+
+所以不要把 `Skill / Hook / MCP / Harness` 当成同一维度去比较。
 
 更准确的理解是：
 
 - `Skill` 在沉淀流程
 - `Hook` 在控制时机
 - `MCP` 在接入能力
-- `Harness` 在组织闭环
+- `Harness` 在把这些能力组织成可运行的执行框架
 
 ---
 
@@ -770,13 +768,9 @@ flowchart TB
     <div class="role-card-label">Worktree</div>
     <div class="role-card-value">隔离工作区与改动范围</div>
   </div>
-  <div class="role-card">
-    <div class="role-card-label">Harness</div>
-    <div class="role-card-value">统一调度并维持闭环</div>
-  </div>
 </div>
 
-这张图把几个最容易混淆的角色放到了同一张分工图里。
+这里先记 6 类具体能力；`Harness` 不是并列的一张能力卡，而是把这些能力组织起来的执行封装层。
 
 ---
 
@@ -791,7 +785,8 @@ flowchart TB
 - `Hook` 提供事件驱动的自动触发能力
 - `MCP` 提供外部系统连接能力
 - `Subagent` 和 `Worktree` 提供并行推进与安全隔离能力
-- `Harness` 则把整套机制真正组织成执行闭环
+
+而 `Harness` 不是并列的某一个能力点，它更像围绕模型的执行封装层：负责统一调度、权限约束、上下文管理和闭环维持。
 
 所以当你看到这些名字时，不要把它们看成孤立的功能点。
 
