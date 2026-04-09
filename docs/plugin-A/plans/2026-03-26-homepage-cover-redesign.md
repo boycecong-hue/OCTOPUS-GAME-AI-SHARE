@@ -1,6 +1,6 @@
 # Homepage Cover Redesign Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use plugin-A:subagent-driven-development (recommended) or plugin-A:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 将首页封面从普通分享封面升级为具有未来科技感的发布会级 Hero 开场，同时保持现有 Markdown 驱动架构不变。
 
@@ -16,7 +16,7 @@
   - 责任：补充首页专用的可复用视觉类，例如 Hero 容器、背景 glow、panel、tag、系统信息带与暗色封面样式。
 - Modify: `sections/00-cover.md`
   - 责任：重写首页内容结构、文案层级与语义块，使用新的通用类而非继续堆积 inline style。
-- Reference: `docs/superpowers/specs/2026-03-26-homepage-cover-redesign-design.md`
+- Reference: `docs/plugin-A/specs/2026-03-26-homepage-cover-redesign-design.md`
   - 责任：本次实现的设计依据。
 
 ## Validation Strategy
@@ -31,7 +31,7 @@
 
 **Files:**
 - Modify: `index.html`
-- Reference: `docs/superpowers/specs/2026-03-26-homepage-cover-redesign-design.md`
+- Reference: `docs/plugin-A/specs/2026-03-26-homepage-cover-redesign-design.md`
 
 - [ ] **Step 1: Add the failing visual target as a checklist in the plan execution notes**
 
@@ -261,7 +261,7 @@ Expected: no selector should target generic elements like `div`, `p`, or all `h1
 
 **Files:**
 - Modify: `sections/00-cover.md`
-- Reference: `docs/superpowers/specs/2026-03-26-homepage-cover-redesign-design.md`
+- Reference: `docs/plugin-A/specs/2026-03-26-homepage-cover-redesign-design.md`
 
 - [ ] **Step 1: Preserve the core content inventory before rewriting**
 
@@ -448,7 +448,7 @@ Do not expand scope into redesigning other sections.
 **Files:**
 - Modify: `index.html`
 - Modify: `sections/00-cover.md`
-- Reference: `docs/superpowers/specs/2026-03-26-homepage-cover-redesign-design.md`
+- Reference: `docs/plugin-A/specs/2026-03-26-homepage-cover-redesign-design.md`
 
 - [ ] **Step 1: Re-read the spec acceptance criteria**
 

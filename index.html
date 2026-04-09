@@ -7,7 +7,7 @@
     <!-- 引入资源 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
     <style>
         :root {
@@ -16,7 +16,7 @@
             --dark: #0f172a;
             --light: #f8fafc;
             --border: #e2e8f0;
-            --sidebar-width: 300px;
+            --sidebar-width: 292px;
             --cover-bg-start: #fffdfd;
             --cover-bg-end: #f8fbff;
             --cover-grid: rgba(167, 139, 250, 0.05);
@@ -52,7 +52,7 @@
             background: #ffffff;
             display: flex;
             flex-direction: column;
-            padding: 30px 20px;
+            padding: 24px 16px;
             flex-shrink: 0;
             border-right: 1px solid var(--border);
             z-index: 100;
@@ -83,20 +83,22 @@
         .nav-links {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
         
         nav a {
-            padding: 14px 18px;
+            padding: 12px 14px;
             color: #64748b;
             text-decoration: none;
             cursor: pointer;
             border-radius: 12px;
             transition: transform var(--motion-fast) var(--motion-ease), background var(--motion-fast) ease, color var(--motion-fast) ease, border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
-            font-weight: 500;
-            font-size: 0.95rem;
+            font-weight: 600;
+            font-size: 0.88rem;
+            line-height: 1.35;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            gap: 10px;
             border: 1px solid transparent;
             position: relative;
             overflow: hidden;
@@ -124,7 +126,8 @@
             height: 6px;
             background: currentColor;
             border-radius: 50%;
-            margin-right: 15px;
+            flex: 0 0 6px;
+            margin-top: 0.45rem;
             opacity: 0.4;
         }
         
@@ -161,7 +164,7 @@
         }
 
         #content {
-            max-width: 1000px;
+            max-width: 1180px;
             margin: 0 auto;
             line-height: 1.8;
             animation: slideUp var(--motion-medium) var(--motion-ease);
@@ -226,9 +229,96 @@
         #content th { background: #f8fafc; font-weight: 700; color: var(--dark); border-bottom: 2px solid var(--border); }
         #content tr:last-child td { border-bottom: none; }
         
-        #content pre { border-radius: 16px; padding: 25px !important; margin: 30px 0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); transition: transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease; }
+        #content pre {
+            border-radius: 18px;
+            padding: 22px 24px !important;
+            margin: 30px 0;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid var(--border);
+            box-shadow: var(--surface-shadow);
+            overflow-x: auto;
+            transition: transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
+        }
         #content img { max-width: 100%; border-radius: 20px; margin: 30px 0; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); transition: transform var(--motion-fast) ease, box-shadow var(--motion-fast) ease; }
-        #content code { background: #f1f5f9; padding: 3px 6px; border-radius: 6px; font-family: 'Fira Code', monospace; color: #ef4444; font-size: 0.9em; }
+        #content code {
+            background: #f1f5f9;
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            color: #dc2626;
+            font-size: 0.9em;
+        }
+        #content pre code {
+            display: block;
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            color: #334155;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            white-space: pre;
+        }
+        #content pre[class*="language-"] {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        }
+        #content pre[class*="language-"] code[class*="language-"],
+        #content code[class*="language-"] {
+            color: #334155;
+            text-shadow: none;
+        }
+        #content pre .token.comment,
+        #content pre .token.prolog,
+        #content pre .token.doctype,
+        #content pre .token.cdata {
+            color: #64748b;
+        }
+        #content pre .token.punctuation {
+            color: #475569;
+        }
+        #content pre .token.property,
+        #content pre .token.tag,
+        #content pre .token.boolean,
+        #content pre .token.number,
+        #content pre .token.constant,
+        #content pre .token.symbol,
+        #content pre .token.deleted {
+            color: #7c3aed;
+        }
+        #content pre .token.selector,
+        #content pre .token.attr-name,
+        #content pre .token.string,
+        #content pre .token.char,
+        #content pre .token.builtin,
+        #content pre .token.inserted {
+            color: #047857;
+        }
+        #content pre .token.operator,
+        #content pre .token.entity,
+        #content pre .token.url,
+        #content pre.language-css .token.string,
+        #content pre.style .token.string,
+        #content code[class*="language-"] .token.operator,
+        #content code[class*="language-"] .token.entity,
+        #content code[class*="language-"] .token.url,
+        #content code[class*="language-"] .language-css .token.string,
+        #content code[class*="language-"] .style .token.string {
+            color: #0f766e;
+            background: transparent;
+        }
+        #content pre .token.atrule,
+        #content pre .token.attr-value,
+        #content pre .token.keyword {
+            color: #2563eb;
+        }
+        #content pre .token.function,
+        #content pre .token.class-name {
+            color: #c2410c;
+        }
+        #content pre .token.regex,
+        #content pre .token.important,
+        #content pre .token.variable {
+            color: #dc2626;
+        }
 
         #content blockquote,
         #content table,
@@ -253,11 +343,11 @@
             background: #ffffff;
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 40px;
+            padding: 28px 24px;
             margin: 40px 0;
             display: block;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-            overflow-x: auto;
+            overflow: visible;
         }
         .mermaid {
             display: flex;
@@ -265,8 +355,80 @@
             min-width: 0;
         }
         .mermaid svg {
-            max-width: none;
+            display: block;
+            max-width: 100%;
+            width: auto;
             height: auto;
+            overflow: visible;
+        }
+        .mermaid,
+        .mermaid svg,
+        .mermaid svg text,
+        .mermaid svg tspan,
+        .mermaid .label,
+        .mermaid .nodeLabel,
+        .mermaid .edgeLabel,
+        .mermaid .cluster-label,
+        .mermaid foreignObject,
+        .mermaid foreignObject div,
+        .mermaid foreignObject span,
+        .mermaid foreignObject p {
+            font-size: 1rem !important;
+            line-height: 1.35;
+            font-family: 'Inter', -apple-system, system-ui, sans-serif !important;
+        }
+
+        @media (max-width: 1100px) {
+            .mermaid-container {
+                padding: 20px 16px;
+                border-radius: 16px;
+            }
+        }
+
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin: 28px 0;
+        }
+
+        .role-card {
+            padding: 20px 22px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
+            box-shadow: var(--surface-shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .role-card-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .role-card-value {
+            display: block;
+            color: var(--cover-text);
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 640px) {
+            .role-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .role-card {
+                padding: 16px 18px;
+                border-radius: 20px;
+            }
         }
 
         .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; color: #94a3b8; }
@@ -318,15 +480,15 @@
         }
 
         .cover-brand-block {
-            margin-bottom: 40px;
+            margin-bottom: 28px;
         }
 
         .cover-brand-label {
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             color: #4f46e5;
-            font-size: 1rem;
+            font-size: 0.96rem;
             font-weight: 900;
-            letter-spacing: 0.24em;
+            letter-spacing: 0.22em;
             text-transform: uppercase;
         }
 
@@ -335,23 +497,23 @@
             font-size: clamp(1.8rem, 2.6vw, 2.6rem);
             font-weight: 900;
             letter-spacing: -0.035em;
-            line-height: 1.15;
+            line-height: 1.12;
         }
 
         .cover-brand-subtitle {
-            margin-top: 10px;
+            margin-top: 6px;
             color: #64748b;
-            font-size: 1.02rem;
+            font-size: 0.98rem;
             font-weight: 600;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.02em;
         }
 
         .cover-kicker {
-            margin: 0 0 28px;
+            margin: 0 0 18px;
             color: #6366f1;
-            font-size: 0.88rem;
+            font-size: 0.82rem;
             font-weight: 800;
-            letter-spacing: 0.18em;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
         }
 
@@ -360,25 +522,25 @@
             max-width: 13ch;
             color: #334155;
             font-size: clamp(3.1rem, 5.4vw, 4.9rem);
-            line-height: 1.08;
-            letter-spacing: -0.04em;
+            line-height: 1.05;
+            letter-spacing: -0.043em;
             font-weight: 900;
         }
 
         .cover-title-accent {
             display: block;
-            margin-top: 10px;
+            margin-top: 8px;
             background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .cover-manifesto {
-            max-width: 780px;
-            margin: 34px 0 0;
+            max-width: 760px;
+            margin: 24px 0 0;
             color: var(--cover-muted);
-            font-size: 1rem;
-            line-height: 1.95;
+            font-size: 0.98rem;
+            line-height: 1.82;
         }
 
         .cover-panel {
@@ -394,13 +556,13 @@
         .cover-meta {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 18px;
+            gap: 14px;
             margin: 0;
         }
 
         .cover-meta-inline {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 20px;
+            grid-template-columns: 1.35fr 0.85fr 1.45fr;
+            gap: 14px;
             align-items: stretch;
             margin-top: 8px;
             transform: translate3d(calc(var(--cover-shift-x, 0px) * -0.18), calc(var(--cover-shift-y, 0px) * -0.18), 0);
@@ -408,7 +570,7 @@
         }
 
         .cover-meta > div {
-            padding: 20px 22px;
+            padding: 16px 18px;
             border-radius: 18px;
             background: rgba(255, 255, 255, 0.78);
             border: 1px solid rgba(148, 163, 184, 0.14);
@@ -418,7 +580,7 @@
 
         .cover-meta-label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #94a3b8;
             font-size: 0.72rem;
             font-weight: 700;
@@ -429,15 +591,46 @@
         .cover-meta-value {
             display: block;
             color: #334155;
-            font-size: 1.02rem;
+            font-size: 0.98rem;
             font-weight: 700;
-            line-height: 1.6;
+            line-height: 1.45;
+        }
+
+        .cover-meta-subline {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(148, 163, 184, 0.16);
+        }
+
+        .cover-meta-mini-label {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.08);
+            color: #6366f1;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .cover-meta-link {
+            font-size: 0.82rem;
+            line-height: 1.4;
+            font-weight: 600;
+            color: #64748b;
+            word-break: break-word;
         }
 
         .cover-focus-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             margin: 0;
             padding: 0;
             list-style: none;
@@ -456,6 +649,12 @@
             font-weight: 700;
             letter-spacing: 0.01em;
             box-shadow: none;
+        }
+
+        @media (max-width: 1180px) {
+            .cover-meta-inline {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
         }
 
         @media (max-width: 980px) {
@@ -477,10 +676,6 @@
                 max-width: none;
                 font-size: 1rem;
             }
-
-            .cover-meta-inline {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
         }
 
         @media (max-width: 640px) {
@@ -494,12 +689,12 @@
             }
 
             .cover-brand-block {
-                margin-bottom: 32px;
+                margin-bottom: 24px;
             }
 
             .cover-brand-label {
-                font-size: 0.76rem;
-                letter-spacing: 0.18em;
+                font-size: 0.74rem;
+                letter-spacing: 0.16em;
             }
 
             .cover-brand-name {
@@ -507,23 +702,25 @@
             }
 
             .cover-brand-subtitle {
-                font-size: 0.92rem;
+                margin-top: 5px;
+                font-size: 0.9rem;
             }
 
             .cover-kicker {
-                font-size: 0.84rem;
-                letter-spacing: 0.12em;
+                margin-bottom: 14px;
+                font-size: 0.78rem;
+                letter-spacing: 0.1em;
             }
 
             .cover-title {
                 font-size: clamp(2.2rem, 12vw, 3.2rem);
-                line-height: 1.06;
+                line-height: 1.05;
             }
 
             .cover-manifesto {
-                margin-top: 24px;
-                font-size: 0.96rem;
-                line-height: 1.9;
+                margin-top: 18px;
+                font-size: 0.94rem;
+                line-height: 1.8;
             }
 
             .cover-meta-inline {
@@ -587,14 +784,13 @@
     <div class="nav-links">
         <a onclick="loadSection('00-cover', this)" class="active">欢迎与开场</a>
         <a onclick="loadSection('01-intro', this)">为什么是现在</a>
-        <a onclick="loadSection('02-models', this)">先看模型层</a>
-        <a onclick="loadSection('02-terms', this)">最小术语表</a>
-        <a onclick="loadSection('03-cli', this)">为什么是 Agent / Harness / CLI</a>
-        <a onclick="loadSection('03-ccswitch', this)">CC Switch 实操</a>
-        <a onclick="loadSection('03-claude-tips', this)">Claude Code 15 个技巧</a>
-        <a onclick="loadSection('04-sdlc', this)">研发闭环演示</a>
-        <a onclick="loadSection('05-enterprise', this)">企业治理与边界</a>
-        <a onclick="loadSection('06-future', this)">角色演进与结尾</a>
+        <a onclick="loadSection('02-models', this)">模型与选择</a>
+        <a onclick="loadSection('02-terms', this)">调用链路</a>
+        <a onclick="loadSection('03-cli', this)">Agent/Harness/CLI</a>
+        <a onclick="loadSection('03-ccswitch', this)">CC Switch</a>
+        <a onclick="loadSection('03-claude-tips', this)">Claude Code 技巧</a>
+        <a onclick="loadSection('04-sdlc', this)">研发闭环</a>
+        <a onclick="loadSection('06-future', this)">角色演进</a>
     </div>
 </nav>
 
@@ -623,6 +819,7 @@
     mermaid.initialize({
         startOnLoad: false,
         theme: 'default',
+        useMaxWidth: false,
         themeVariables: {
             primaryColor: '#e0f2fe',
             primaryTextColor: '#075985',
@@ -630,7 +827,7 @@
             lineColor: '#475569',
             secondaryColor: '#f1f5f9',
             tertiaryColor: '#f8fafc',
-            fontSize: '15px',
+            fontSize: '16px',
             fontFamily: 'Inter, system-ui, sans-serif'
         },
         flowchart: {
@@ -638,6 +835,13 @@
             useMaxWidth: false,
             nodeSpacing: 38,
             rankSpacing: 52
+        },
+        sequence: {
+            useMaxWidth: false,
+            diagramMarginX: 24,
+            diagramMarginY: 16,
+            actorMargin: 32,
+            boxMargin: 12
         },
         securityLevel: 'loose'
     });

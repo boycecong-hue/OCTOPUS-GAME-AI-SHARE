@@ -50,12 +50,12 @@ bash ai-share.sh
 当前内容按章节拆分在 `sections/` 中维护：
 - `00-cover.md`：封面与开场
 - `01-intro.md`：为什么现在要讲 AI Coding
-- `02-terms.md`：最小术语表
+- `02-models.md`：先看模型层
+- `02-terms.md`：调用链路与执行机制
 - `03-cli.md`：为什么是 Agent / Harness / CLI
 - `03-ccswitch.md`：CC Switch 实操
 - `03-claude-tips.md`：Claude Code 的 15 点实用技巧
 - `04-sdlc.md`：AI 如何进入研发闭环
-- `05-enterprise.md`：企业治理与边界
 - `06-future.md`：角色演进与结尾
 
 如果新增、重命名或调整章节顺序，需要同步更新 `index.html` 中的导航配置。

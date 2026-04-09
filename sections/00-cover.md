@@ -19,6 +19,10 @@
     <div>
       <span class="cover-meta-label">Speaker</span>
       <div class="cover-meta-value">丛泊阳</div>
+      <div class="cover-meta-subline">
+        <span class="cover-meta-mini-label">Repo</span>
+        <div class="cover-meta-value cover-meta-link">github.com/boycecong-hue/OCTOPUS-GAME-AI-SHARE</div>
+      </div>
     </div>
     <div>
       <span class="cover-meta-label">Session</span>

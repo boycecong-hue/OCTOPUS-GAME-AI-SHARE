@@ -14,10 +14,11 @@
 
 ### 3.1 页面模块
 1. **引导页 (Intro)**：背景、愿景与开发者范式转移。
-2. **术语地图 (Terminology)**：
-   - LLM vs. Copilot vs. Agent 对比。
-   - Skill vs. MCP 深度解析。
-   - 知识增强路径对比 (RAG vs. Long Context)。
+2. **调用链路与执行机制 (Runtime Flow)**：
+   - Harness / Hook / MCP / LSP 的分层关系。
+   - 一次请求从模型决策到工具执行的调用链路。
+   - Hook 与 MCP 的职责边界。
+   - Claude Code 执行闭环如何组织 Tools / Agents / Memory。
 3. **CLI 工具实战 (CLI Suite)**：
    - Claude Code：任务驱动、自主执行、跨文件重构。
    - Gemini CLI：超长上下文分析、多模态架构扫描。

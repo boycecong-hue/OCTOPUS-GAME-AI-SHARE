@@ -1,6 +1,6 @@
 # CLI / Agent Architecture Comparison Slide Rewrite Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use plugin-A:subagent-driven-development (recommended) or plugin-A:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 将 `sections/03-cli.md` 的后半部分重写为“路线 + 机制 + 例子”的架构对比页，让一线工程师能理解 Claude Code、Codex、Gemini 的不同产品路线。
 
@@ -22,7 +22,7 @@
 
 - Modify: `sections/03-cli.md`
   - 责任：重写第三部分之后的内容结构，加入四层总图、三家路线表、机制级例子、工程师判断框架。
-- Reference: `docs/superpowers/specs/2026-04-08-cli-agent-architecture-comparison-design.md`
+- Reference: `docs/plugin-A/specs/2026-04-08-cli-agent-architecture-comparison-design.md`
   - 责任：本次实现的设计依据。
 
 ## Validation Strategy
@@ -38,7 +38,7 @@
 
 **Files:**
 - Modify: `sections/03-cli.md`
-- Reference: `docs/superpowers/specs/2026-04-08-cli-agent-architecture-comparison-design.md`
+- Reference: `docs/plugin-A/specs/2026-04-08-cli-agent-architecture-comparison-design.md`
 
 - [x] **Step 1: Add the failing content checklist to execution notes**
 
@@ -155,7 +155,7 @@ EOF
 
 **Files:**
 - Modify: `sections/03-cli.md`
-- Reference: `docs/superpowers/specs/2026-04-08-cli-agent-architecture-comparison-design.md`
+- Reference: `docs/plugin-A/specs/2026-04-08-cli-agent-architecture-comparison-design.md`
 
 - [x] **Step 1: Remove the old product-introduction subsections after the shared diagram**
 
@@ -235,7 +235,7 @@ EOF
 
 **Files:**
 - Modify: `sections/03-cli.md`
-- Reference: `docs/superpowers/specs/2026-04-08-cli-agent-architecture-comparison-design.md`
+- Reference: `docs/plugin-A/specs/2026-04-08-cli-agent-architecture-comparison-design.md`
 
 - [x] **Step 1: Add one mechanism-level example for each product**
 
@@ -308,7 +308,7 @@ EOF
 
 **Files:**
 - Modify: `sections/03-cli.md` (only if fixes are needed)
-- Reference: `docs/superpowers/specs/2026-04-08-cli-agent-architecture-comparison-design.md`
+- Reference: `docs/plugin-A/specs/2026-04-08-cli-agent-architecture-comparison-design.md`
 
 - [x] **Step 1: Read the final `sections/03-cli.md` and compare it against the spec**
 

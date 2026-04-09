@@ -1,6 +1,6 @@
 # Homepage Cover Light Glass Refresh Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use plugin-A:subagent-driven-development (recommended) or plugin-A:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 将首页封面从深色未来感快速切换为白底局部渐变、浅色玻璃感海报风格，同时保留现有内容结构。
 

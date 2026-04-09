@@ -8,7 +8,7 @@ This repository is a slide deck for an internal AI coding tech talk, implemented
 
 - `index.html` is the entire app shell: layout, styling, navigation, Markdown rendering, Mermaid rendering, Prism highlighting, and client-side section loading.
 - `sections/*.md` are the slide sources. Each file maps to one navigation item and is fetched dynamically by `loadSection()` in `index.html`.
-- `docs/superpowers/specs/2026-03-26-ai-coding-sharing-design.md` is the source design brief for the presentation structure and messaging.
+- `docs/plugin-A/specs/2026-03-26-ai-coding-sharing-design.md` is the source design brief for the presentation structure and messaging.
 - `start_sharing.sh` and `ai-share.sh` are convenience scripts for serving the deck locally over `python3 -m http.server`.
 
 ## Common Commands
@@ -92,6 +92,6 @@ This means presentation rendering depends on network access unless those assets 
 
 - `index.html`: app shell and all client-side behavior
 - `sections/`: slide content split by chapter
-- `docs/superpowers/specs/2026-03-26-ai-coding-sharing-design.md`: original presentation design/spec
+- `docs/plugin-A/specs/2026-03-26-ai-coding-sharing-design.md`: original presentation design/spec
 - `start_sharing.sh`: portable local serve helper
 - `ai-share.sh`: local serve helper with hardcoded project path
