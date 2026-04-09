@@ -2,7 +2,9 @@
 
 ## 前言
 
-在 Claude Code、Agent Runtime、AI Coding、MCP 这些语境里，很多人会同时看到这些概念：
+上一章已经先讲清楚：为什么今天真正的竞争，不再只是模型强弱，而是产品如何把 Agent、Harness 和执行入口组织成系统。
+
+接下来再往里拆：在 Claude Code、Agent Runtime、AI Coding、MCP 这些语境里，很多人会同时看到这些概念：
 
 - Hooks
 - MCP Servers
@@ -919,4 +921,4 @@ sequenceDiagram
 
 > 它们都是同一套 harness 执行体系中不同层次的组件，各自负责不同的职责，但共同支撑了模型从“思考”走向“行动”的过程。
 
-下一章我们不再重复运行机制本身，而是直接看：当大家都在做 agent 时，Claude Code、Codex、Gemini 分别把产品重心压在哪一层。
+理解完这套调用链路后，再去看 CC Switch 这类配置中枢，就更容易明白：它管理的不是单个模型，而是整套 AI Coding 执行环境。 
